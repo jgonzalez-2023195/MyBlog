@@ -2,59 +2,93 @@ import React from 'react'
 import styled from 'styled-components'
 import { Icon } from '@iconify/react'
 
-export const Input = ({ 
+export const Input = ({
     field,
-    holder, 
-    type, 
-    value, 
+    text,
+    value,
     change,
     showErrMsg,
     validateMsg,
     blur,
-    textarea,
     icon,
     iconName
 }) => {
+
     return (
-        <InputWrapper>
-            {icon && (
+        <StyledWrapper>
+            <div className="container">
+                {icon && (
                     <Icon icon={iconName} className='IconWrapper' />
-                )
-            }
-            <StyledInput
-                type={type}
-                placeholder={holder}
-                $hasIcon={icon}
-            />
-        </InputWrapper>
+                )}
+                <input 
+                    className='input'
+                    required
+                    value={value}
+                />
+                <label className="label">{text}</label>
+            </div>
+        </StyledWrapper>
     )
 }
 
+// ... (el StyledWrapper sigue igual)
 
-const InputWrapper = styled.div`
+
+const StyledWrapper = styled.div`
+  .container {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
     position: relative;
-    .IconWrapper{
-        position: absolute;
-        width: 25;
-        height: 25;
-        left: 0.75rem;
-        top: 50%;
-        transform: translateY(-50%);
-        color: red;
-    }
-`
+    color: black;
+  }
 
-const StyledInput = styled.input`
-    width: 50%;
-    padding: 0.5rem 2rem;
-    padding-left: ${props => props.$hasIcon ? '2.5rem' : '1rem'};
+  .container .label {
+    font-size: 20px;
+    padding-left: 10px;
+    position: absolute;
+    top: 13px;
+    transition: 0.3s;
+    
+    pointer-events: none;
+  }
+
+  .input {
+    width: 25em;
+    height: auto;
+    min-height: 50px;
     border: none;
-    background-color: yellow;
-    font-size: 0.875rem;
-    color: blue;
-    border-bottom: .5px solid black;
-    padding-bottom: 5px;
-    &:focus {
-        outline: none;
-    }
-`
+    outline: none;
+    padding: 0px 17px;
+    margin-top: 5px;
+    border-radius: 6px;
+    color: black;
+    font-size: 20px;
+    background-color: transparent;
+    box-shadow: 3px 3px 10px rgba(0,0,0,1),
+    -1px -1px 6px rgba(255, 255, 255, 0.4);
+  }
+
+  .input:focus {
+    border: 2px solid transparent;
+    color: black;
+    box-shadow: 3px 3px 10px rgba(0,0,0,1),
+    -1px -1px 6px rgba(255, 255, 255, 0.4),
+    inset 3px 3px 10px rgba(0,0,0,1),
+    inset -1px -1px 6px rgba(255, 255, 255, 0.4);
+  }
+
+  .container .input:valid ~ .label,
+  .container .input:focus ~ .label {
+    transition: 0.3s;
+    padding-left: 2px;
+    transform: translateY(-35px);
+  }
+
+  .container .input:valid,
+  .container .input:focus {
+    box-shadow: 3px 3px 10px rgba(0,0,0,1),
+    -1px -1px 6px rgba(255, 255, 255, 0.4),
+    inset 3px 3px 10px rgba(0,0,0,1),
+    inset -1px -1px 6px rgba(255, 255, 255, 0.4);
+}`

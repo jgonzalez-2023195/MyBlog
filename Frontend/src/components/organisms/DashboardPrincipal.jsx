@@ -1,11 +1,13 @@
 import React from 'react'
 import styled, { keyframes } from 'styled-components'
 import photo from '../../assets/F1-Logo.png'
-import post from '../../assets/Prueba.jpg'
+// import post from '../../assets/Prueba.jpg'
 import { Icon } from '@iconify/react'
 import { UserConnect } from '../molecules/UserConnect'
+import { usePublications } from '../../hooks/usePublications'
 
 export const DashboardPrincipal = () => {
+  const {publications, isLoading, error} = usePublications()
   const users = [
     {
         userName: 'apple',
@@ -39,51 +41,45 @@ export const DashboardPrincipal = () => {
     },
 ]
 
+  if (isLoading) {
+    return <p>Cargando eventos...</p>;
+  }
+
+  if (error) {
+    return <p>Error al cargar los eventos: {error}</p>;
+  }
+
   return (
     <Contetn>
       <CardSection>
-        <Card>
-          <DataUser>
-            <ProfilePicture src={photo}/>
-            <div className="text">
-              <Label>F1</Label>
-              <Time>2 h</Time>
-            </div>
-          </DataUser>
-          <Data>
-            <Paragraph>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Neque saepe recusandae harum perspiciatis nobis reprehenderit, ipsam nisi suscipit minima maiores molestias doloremque vel quos, voluptatum in commodi excepturi iure perferendis.</Paragraph>
-            <Hashtag href='#'>#Formula1</Hashtag>
-          </Data>
-          <Image>
-            <Img src={post}/>
-          </Image>
-          <Accions>
-            <BtnContent>
-              
-            </BtnContent>
-          </Accions>
-        </Card>
-        <Card>
-          <DataUser>
-            <ProfilePicture src={photo}/>
-            <div className="text">
-              <Label>F1</Label>
-              <Time>2 h</Time>
-            </div>
-          </DataUser>
-          <Data>
-            <Paragraph>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Neque saepe recusandae harum perspiciatis nobis reprehenderit, ipsam nisi suscipit minima maiores molestias doloremque vel quos, voluptatum in commodi excepturi iure perferendis.</Paragraph>
-            <Hashtag href='#'>#Formula1</Hashtag>
-          </Data>
-          <Image>
-            <Img src={post}/>
-          </Image>
-          <Accions>
-            <BtnContent>
-              
-            </BtnContent>
-          </Accions>
-        </Card>
+        {publications.length > 0 ? (
+          publications.map(publication => (
+          <Card key={publication.id}>
+            <DataUser>
+              <ProfilePicture src={photo}/>
+              <div className="text">
+                <Label>{publication.userPublication}</Label>
+                <Time>2 h</Time>
+              </div>
+            </DataUser>
+            <Data>
+              <Paragraph>{publication.text}</Paragraph>
+              <Hashtag href='#'>{publication.hashtags}</Hashtag>
+            </Data>
+            <Image>
+              <Img src={publication.mediaPicture}/>
+            </Image>
+            <Accions>
+              <BtnContent>
+                
+              </BtnContent>
+            </Accions>
+          </Card>
+          ))
+        ) : (
+          <p>No hay nada</p>
+        )
+      }
       </CardSection>
       <ConnectPeopleSection>
         <LabelS>

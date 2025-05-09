@@ -4,8 +4,8 @@ import express from 'express'
 import helmet from 'helmet'
 import cors from 'cors'
 import morgan from 'morgan'
-import { Server } from 'socket.io'
-import { createServer } from 'node:http'
+import { Server as SocketServer } from 'socket.io'
+import http from 'http'
 import catRoutes from '../src/courses/course.routes.js'
 import publicationRoutes from '../src/publication/publication.routes.js'
 import commentRoutes from '../src/comment/comment.routes.js'
@@ -24,24 +24,21 @@ const routes = (app)=> {
     app.use('/v1/blog/comment', commentRoutes)
 }
 
+
 export const initServer = ()=> {
     const app = express()
-    const server = createServer(app)
-    const io = new Server(server, {
-        cors: {
-            origin: '*',
-            methods: ['GET', 'POST']
-        }
+    const server = http.createServer(app)
+    const io = new SocketServer(server, {
+      cors: 'http://localhost:5173'
     })
 
-    io.on('connection', (socket) => {
+    io.on('connection', socket => {
         console.log('Cliente Socket.IO conectado:', socket.id);
   
         socket.on('message', (message) => {
           console.log(`Mensaje Socket.IO recibido de ${socket.id}: ${message}`);
-  
-          // Ejemplo: Reenviar el mensaje a todos los clientes
-          io.emit('message', `Servidor dice (${socket.id}): ${message}`);
+
+          socket.emit('message', `Servidor dice (${socket.id}): ${message}`);
         });
   
         socket.on('disconnect', () => {
@@ -59,6 +56,7 @@ export const initServer = ()=> {
         configs(app)
         routes(app)
         server.listen(process.env.PORT)
+        
         console.log(`Server express and socket, running in port: ${process.env.PORT}`);
     } catch (e) {
         console.error('Server init failed: ', e);

@@ -20,7 +20,7 @@ export const SideBar = () => {
                         <NavLink to={'/'}>
                             <Icon icon="majesticons:home" className='Icon' />
                         </NavLink>
-                        <NavLink to={'/otro'}>
+                        <NavLink to={'/new'}>
                             <Icon icon="arcticons:daily-dev" className='Icon' />
                         </NavLink>
                         <Icon icon="icon-park-outline:search" className='Icon' />

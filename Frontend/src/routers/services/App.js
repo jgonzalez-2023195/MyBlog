@@ -17,3 +17,14 @@ export const getPublications = async()=> {
         }
     }
 }
+
+export const newPublication = async(publication)=> {
+    try {
+        return await apiClient.post('/publication/new', publication)
+    } catch (e) {
+        return {
+            error: true,
+            e
+        }
+    }
+}

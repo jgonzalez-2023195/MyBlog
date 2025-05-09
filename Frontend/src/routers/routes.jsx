@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider, Route, Routes } from "react-router"
 import { Layout } from "../hooks/Layout"
 import { DashboardPrincipal } from "../components/organisms/DashboardPrincipal"
-import { NewDashboard } from "../components/organisms/NewDashboard"
+import { NewPublication } from "../components/organisms/NewPublication"
 
 const router = createBrowserRouter(
     [
@@ -16,8 +16,8 @@ const router = createBrowserRouter(
                     errorElement: <div>Algo salio mal</div>
                 },
                 {
-                    path: '/otro',
-                    Component: NewDashboard,
+                    path: '/new',
+                    Component: NewPublication,
                     errorElement: <div>otra vez salio mal</div>
                 }
             ],
