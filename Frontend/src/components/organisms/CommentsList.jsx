@@ -13,11 +13,9 @@ const ListContainer = styled.div`
 
 const CommentsContainer = styled.div`
   margin-top: 16px;
-  max-height: 400px; /* Altura máxima para permitir el desplazamiento */
-  overflow-y: auto; /* Desplazamiento vertical solo para los comentarios */
-  padding-right: 8px; /* Espacio para la barra de desplazamiento */
-  
-  /* Estilo para la barra de desplazamiento */
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 8px;
   &::-webkit-scrollbar {
     width: 8px;
   }
@@ -54,7 +52,6 @@ const Button = styled.button`
   gap: 8px;
   font-size: 14px;
   font-weight: 500;
-
   &:hover {
     background-color: #d8701a;
   }
@@ -70,46 +67,66 @@ const Icon = styled.div`
   justify-content: center;
 `;
 
-export const CommentsList = ({ comments = [], onReply }) => {
+const Replies = styled.div`
+  margin-left: 20px;
+  border-left: 2px solid #eee;
+  padding-left: 10px;
+`;
+
+const Loading = styled.div`
+  text-align: center;
+  color: #757575;
+  padding: 16px;
+`;
+
+const NoComments = styled.div`
+  text-align: center;
+  color: #757575;
+  padding: 16px;
+`;
+
+export const CommentsList = ({
+  comments = [],
+  onReply,
+  onLike,
+  onDislike,
+  isLoading,
+}) => {
   const [sortOption, setSortOption] = useState('most_recent');
-  const [visibleComments, setVisibleComments] = useState(3); // Número inicial de comentarios visibles
-  const [isExpanded, setIsExpanded] = useState(false); // Estado para alternar entre "Show more" y "Show less"
+  const [visibleComments, setVisibleComments] = useState(3);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const sortComments = (commentsArray, option) => {
     const sorted = [...commentsArray];
     switch (option) {
       case 'most_recent':
-        return sorted.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+        return sorted.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
       case 'oldest':
-        return sorted.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+        return sorted.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
       case 'most_liked':
-        return sorted.sort((a, b) => b.likes.count - a.likes.count);
+        return sorted.sort((a, b) => (b.likes.count || 0) - (a.likes.count || 0));
       default:
         return sorted;
     }
   };
 
   const sortedComments = sortComments(comments, sortOption);
-  const initialCommentLimit = 3; // Límite inicial de comentarios
+  const initialCommentLimit = 3;
 
-  // Determina cuántos comentarios mostrar según el estado de isExpanded
-  const displayedComments = isExpanded 
-    ? sortedComments 
+  const displayedComments = isExpanded
+    ? sortedComments
     : sortedComments.slice(0, visibleComments);
 
   const handleToggleComments = () => {
     if (isExpanded) {
-      // Si está expandido, colapsa a los comentarios iniciales
       setVisibleComments(initialCommentLimit);
       setIsExpanded(false);
     } else {
-      // Si está colapsado, muestra todos los comentarios
       setVisibleComments(sortedComments.length);
       setIsExpanded(true);
     }
   };
 
-  // Mostrar el botón solo si hay más comentarios para mostrar o si está expandido
   const showToggleButton = sortedComments.length > initialCommentLimit;
 
   return (
@@ -120,17 +137,20 @@ export const CommentsList = ({ comments = [], onReply }) => {
         onSortChange={setSortOption}
       />
       <CommentsContainer>
-        {displayedComments.length === 0 ? (
-          <p style={{ textAlign: 'center', color: '#757575' }}>
-            No hay comentarios aún. ¡Sé el primero en comentar!
-          </p>
+        {isLoading ? (
+          <Loading>Cargando comentarios...</Loading>
+        ) : displayedComments.length === 0 ? (
+          <NoComments>No hay comentarios aún. ¡Sé el primero en comentar!</NoComments>
         ) : (
-          displayedComments.map(comment => (
-            <CommentItem
-              key={comment.id}
-              comment={comment}
-              onReply={onReply}
-            />
+          displayedComments.map((comment) => (
+            
+              <CommentItem
+                key={comment.id}
+                comment={comment}
+                onReply={onReply}
+                onLike={onLike}
+                onDislike={onDislike}
+              />
           ))
         )}
       </CommentsContainer>

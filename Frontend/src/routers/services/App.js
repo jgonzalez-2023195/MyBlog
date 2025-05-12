@@ -43,9 +43,9 @@ export const newPublicationRequest = async(publication)=> {
 }
 
 //Comment
-export const getCommentsRequest = async()=> {
+export const getCommentsRequest = async(publicationId)=> {
     try {
-        return await apiClient.get(`/comment/list`)
+        return await apiClient.get(`/comment/list/${publicationId}`)
     } catch (e) {
         return {
             error: true,

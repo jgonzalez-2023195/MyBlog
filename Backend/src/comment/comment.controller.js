@@ -1,4 +1,6 @@
 import Comment from './comment.model.js'
+import Publication from '../publication/publication.model.js'
+import { Types } from 'mongoose'
 
 export const commentToPublication = async(req, res)=> {
     try {
@@ -25,27 +27,18 @@ export const commentToPublication = async(req, res)=> {
 }
 
 export const listComment = async(req, res)=> {
-    const {limit, skip} = req.query
+    const id = req.params.id
     try {
-        let comment = await Comment.find().limit(limit).skip(skip).populate(
-            [
-                {
-                    path: 'publication',
-                    select: 'title text mediaPicture -_id'
-                },
-                {
-                    path: 'parentComment',
-                    select: 'text -_id'
-                }
-            ]
-        )
-
-        if(comment.length===0) return res.status(404).send(
+        if(!Types.ObjectId.isValid(id)) return res.status(400).send(
             {
                 success: false,
-                message: 'No comments'
+                message: 'Invalid ObjectId publication'
             }
         )
+
+        let comment = await Comment.find({publication: id})
+
+        
         return res.status(200).send(
             {
                 success: true,

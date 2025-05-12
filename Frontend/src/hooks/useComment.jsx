@@ -12,8 +12,8 @@ export const useComment = () => {
     const addcomments = async(data)=> {
         setIsLoading(true)
         const comment = {
-            text: data?.text,
-            user: data?.userComment,
+            textComment: data?.text,
+            user: data?.user,
             publication: data?.publication,
             ...(data?.parentComment && { parentComment: data.parentComment })
         }

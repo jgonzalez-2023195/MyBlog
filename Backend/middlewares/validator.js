@@ -59,7 +59,7 @@ export const updatPublication = [
 ]
 
 export const newComment = [
-    body('text')
+    body('textComment')
         .notEmpty().withMessage('Text cannot be empty'),
     body('publication')
         .notEmpty().withMessage('ObjectId publication cannot be empty')

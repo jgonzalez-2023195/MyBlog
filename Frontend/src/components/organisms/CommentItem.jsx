@@ -35,7 +35,7 @@ const RepliesContainer = styled.div`
 
 const ReplyInputContainer = styled.div`
   margin-top: 16px;
-  margin-left: 44px; 
+  margin-left: 44px;
 `;
 
 const Text = styled.p`
@@ -43,99 +43,51 @@ const Text = styled.p`
   margin: 0;
 `;
 
-export const CommentItem = ({ comment, onReply }) => {
+export const CommentItem = ({ comment, onReply, onLike, onDislike }) => {
   const [replyVisible, setReplyVisible] = useState(false);
-  const [likes, setLikes] = useState(comment.likes);
-  const [dislikes, setDislikes] = useState(comment.dislikes);
-  
-  const handleLike = () => {
-    if (likes.userAction) {
-      setLikes({
-        count: likes.count - 1,
-        userAction: false
-      });
-    } else {
-      setLikes({
-        count: likes.count + 1,
-        userAction: true
-      });
-      
-      if (dislikes.userAction) {
-        setDislikes({
-          count: dislikes.count - 1,
-          userAction: false
-        });
-      }
-    }
-  };
-  
-  const handleDislike = () => {
-    if (dislikes.userAction) {
-      setDislikes({
-        count: dislikes.count - 1,
-        userAction: false
-      });
-    } else {
-      setDislikes({
-        count: dislikes.count + 1,
-        userAction: true
-      });
-      
-      if (likes.userAction) {
-        setLikes({
-          count: likes.count - 1,
-          userAction: false
-        });
-      }
-    }
-  };
-  
+
   const toggleReply = () => {
     setReplyVisible(!replyVisible);
   };
-  
+
   const handleReplySubmit = (content) => {
-    onReply(comment.id, content);
+    onReply(comment.id, content); // Llama a onReply con el ID del comentario y el contenido
     setReplyVisible(false);
   };
+  console.log(comment.user);
   
   return (
     <CommentContainer>
-      <UserInfo 
-        user={comment.user} 
-        timestamp={comment.timeAgo} 
-      />
-      
+      <UserInfo user={comment.user} timestamp={comment.timeAgo} />
       <CommentContent>
-        <Text>{comment.content}</Text>
+        <Text>{comment.textComment}</Text>
       </CommentContent>
-      
-      <CommentActions 
-        likes={likes}
-        dislikes={dislikes}
-        onLike={handleLike}
-        onDislike={handleDislike}
-        onReply={toggleReply}
-        onMore={() => {}}
-      />
-      
+      <CommentActions
+  likes={comment.likes}
+  dislikes={comment.dislikes}
+  onLike={() => onLike(comment.id)}
+  onDislike={() => onDislike(comment.id)}
+  onReply={toggleReply}
+  onMore={() => {}}
+/>
       {replyVisible && (
         <ReplyInputContainer>
-          <CommentInput 
-            placeholder="Write a reply..." 
+          <CommentInput
+            placeholder="Write a reply..."
             onSubmit={handleReplySubmit}
             buttonText="Reply"
           />
         </ReplyInputContainer>
       )}
-      
       {comment.replies && comment.replies.length > 0 && (
         <RepliesContainer>
-          {comment.replies.map(reply => (
-            <CommentItem 
-              key={reply.id} 
-              comment={reply} 
+          {comment.replies.map((reply) => (
+            <CommentItem
+              key={reply.id}
+              comment={reply}
               onReply={onReply}
+              onLike={onLike}
+              onDislike={onDislike}
             />
           ))}
         </RepliesContainer>
@@ -143,6 +95,3 @@ export const CommentItem = ({ comment, onReply }) => {
     </CommentContainer>
   );
 };
-
-
-

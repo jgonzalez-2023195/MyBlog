@@ -1,57 +1,62 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CommentInput } from '../components/organisms/CommentInput';
 import { CommentsList } from '../components/organisms/CommentsList';
 import { CommentSectionTemplate } from '../components/template/CommentSectionTemplate';
 import styled from 'styled-components';
 import { useComment } from '../hooks/useComment';
+import { useComments } from '../hooks/useComments'
 
 export const CommentSection = ({handleOpen, publicationId}) => {
-  const [comments, setComments] = useState([]); // Inicializa vacío
   const { addcomments } = useComment()
+  const { getComments: fetchedComments, isLoading: loadingComments, error: errorComments } = useComments(publicationId)
+  const [comments, setComments] = useState([]);
+  
+  useEffect(() => {
+    if (fetchedComments) {
+      setComments(fetchedComments);
+    }
+  }, [fetchedComments]);
+
+  if (loadingComments) {
+    return <p>Cargando comentarios...</p>;
+  }
+
+  if (errorComments) {
+    return <p>Error al cargar los comentarios.</p>;
+  }// Inicializa vacío
 
   const handleAddComment = async (data) => {
     const commentData = {
       text: data.text,
-      user: data.user || 'current-user', // Usa el ID del usuario autenticado
+      user: data.user || 'current-user',
       publication: publicationId,
+      parentComment: data.parentComment, // Si estás manejando respuestas desde aquí
     };
-    console.log('recibido', publicationId);
-    
+    console.log('enviando comentario', commentData);
 
     const response = await addcomments(commentData);
-    if (response.success) {
-      // Agregar el comentario localmente para mostrarlo inmediatamente
+    if (response.success && response.comment) {
       const newComment = {
-        id: response.comment._id || `comment-${Date.now()}`,
-        user: {
-          id: commentData.user,
-          name: data.user || 'AAA User', // Ajusta según datos reales
-          avatar: 'https://randomuser.me/api/portraits/men/43.jpg',
-        },
-        content: commentData.text, // Usamos "content" en el frontend, pero enviamos "text" al backend
-        timestamp: new Date(),
+        ...response.comment, // Mantén las propiedades del comentario creado en el backend
         likes: { count: 0, userAction: false },
         dislikes: { count: 0, userAction: false },
-        replies: [],
+        user: {
+          id: commentData.user,
+          name: data.user || 'AAA User',
+          avatar: 'https://randomuser.me/api/portraits/men/43.jpg', // Simula datos de usuario
+        },
+        content: commentData.text, // Asegúrate de usar la propiedad correcta para el contenido
+        timestamp: new Date(),
         timeAgo: 'Just now',
+        replies: [], // Inicializa las respuestas si no vienen del backend
       };
       setComments([newComment, ...comments]);
     }
   }
 
-  const handleReply = (commentId, content) => {
+  const handleReply = (commentId) => {
     const newReply = {
-      id: `reply-${Date.now()}`,
-      user: {
-        id: 'current-user',
-        name: 'AAAAAAAAAAAAAAAAAAAA User',
-        avatar: 'https://randomuser.me/api/portraits/men/43.jpg',
-      },
-      content: content,
-      timestamp: new Date(),
-      likes: { count: 0, userAction: false },
-      dislikes: { count: 0, userAction: false },
-      timeAgo: 'Just now'
+      
     };
 
     const updateReplies = (commentsList) => {

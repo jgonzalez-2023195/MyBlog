@@ -41,6 +41,14 @@ export const initServer = ()=> {
         io.emit('newPublication', message); // Use 'newPublication' event to avoid confusion with the input message
         socket.emit('message', `Servidor dice (${socket.id}): ${JSON.stringify(message)}`);
         });
+
+        socket.on('message', (message) => {
+          console.log(`Mensaje Socket.IO recibido de ${socket.id}:`, message);
+        // Broadcast the new publication to all connected clients
+        io.emit('newComment', message)
+        socket.emit('message', `Servidor dice (${socket.id}): ${JSON.stringify(message)}`);
+        });
+
   
         socket.on('disconnect', () => {
           console.log('Cliente Socket.IO desconectado:', socket.id);

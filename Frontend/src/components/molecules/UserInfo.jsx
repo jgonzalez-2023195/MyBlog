@@ -44,19 +44,16 @@ const Timestamp = styled.div`
 `;
 
 export const UserInfo = ({ user, timestamp, size = 'md', weight = 'medium' }) => {
+  console.log(user);
+  
   return (
     <UserInfoContainer>
-      <Avatar src={user.avatar} alt={user.name} size={size} />
       <UserDetails>
         <UserNameContainer>
           <UserName size={size} weight={weight}>
-            {user.name}
+            {user}
           </UserName>
-          {user.isVerified && (
-            <VerifiedBadge>
-              <Icon name="BadgeCheck" size={size === 'sm' ? 14 : 16} />
-            </VerifiedBadge>
-          )}
+          
         </UserNameContainer>
         <Timestamp size={size}>
           {timestamp}

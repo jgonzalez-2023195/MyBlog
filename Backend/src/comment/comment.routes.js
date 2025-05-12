@@ -13,7 +13,7 @@ api.post(
 )
 
 api.get(
-    '/list/',
+    '/list/:id',
     listComment
 )
 
