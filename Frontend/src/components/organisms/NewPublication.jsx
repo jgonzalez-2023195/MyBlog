@@ -1,15 +1,23 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { useForm } from 'react-hook-form'
 import { Input } from '../atoms/Input';
 import { ImgUpload } from '../molecules/ImgUpload';
-import { Status } from '../molecules/Status';
+import { usePublication } from '../../hooks/usePublication';
 import toast from 'react-hot-toast';
+import Select from 'react-select'
+import { SelectCourse } from '../molecules/SelectCourse';
 
 export const NewPublication = () => {
     const preset_name = 'aslkfd';
     const cloud_name = 'dzydnoljd';
     const [image, setImage] = useState('');
     const [loading, setLoading] = useState(false);
+    const { publications } = usePublication();
+
+
+    const { register, handleSubmit, watch, control, formState: { errors, isValid } } = useForm();
+
 
     const uploadImage = async (e) => {
         const files = e.target.files;
@@ -32,30 +40,62 @@ export const NewPublication = () => {
             toast.error('Error al subir la imagen');
             console.error(e);
         }
-    };
+    }
+
+    const userPublication = watch('userPublication', '');
+    const text = watch('text', '');
+    const hashtags = watch('hashtags', '');
+    const course = watch('course', null)
+    const title = watch('title', '');
+
+    const funcionPersonalizedSubmit = async (data) => {
+        // Aquí puedes llamar a la función publications del hook// Suponiendo que tienes un campo para el usuario // Si tienes un curso, puedes obtenerlo de otra parte // Si tienes hashtags, puedes obtenerlos de otra parte
+        // Llamar a la función publications
+        const mediPicture = image;
+        const courseId = data.course?.value
+        
+        await publications(data, mediPicture, courseId);
+    }
+
+    const buttonDisabled = !isValid || loading
 
     return (
       <Wrapper>
           <HeaderSection>
             <h2>Create new post</h2>
-            <button>Guardar</button>
+            <Button type='submit' form='publicationForm' disabled={buttonDisabled}>Guardar</Button>
           </HeaderSection>
         <Container>
-          <LeftColumn>
+          <LeftColumn id='publicationForm' onSubmit={handleSubmit(funcionPersonalizedSubmit)}>
                 <UserInfo>
                   <Input
                     text={'Usuario'}
                     type={'text'}
+                    {...register('userPublication', { required: true})}
+                    error={errors.userPublication}
                   />
                 </UserInfo>
                 <PostForm>
                     <Input
                         text={'Title'}
                         type={'text'}
+                        {...register('title')}
                     />
                     <Input
                         text={'Post text'}
                         type={'text'}
+                        {...register('text')}
+                    />
+                    <Input
+                      text={'Hashtags'}
+                      type={'text'}
+                      {...register('hashtags')}
+                    />
+                    <SelectCourse
+                      control={control}
+                      name={'course'}
+                      rules={{ required: true }}
+                      error={errors.course}
                     />
                     <AttachImageSection>
                         <h3>Attached Image</h3>
@@ -64,30 +104,24 @@ export const NewPublication = () => {
                             onImageUpload={uploadImage}
                         />
                     </AttachImageSection>
-                    <ConnectWebsiteSection>
-                        <h3>Connect website</h3>
-                        <Input
-                            text={'http://'}
-                            type={'url'}
-                        />
-                    </ConnectWebsiteSection>
                 </PostForm>
           </LeftColumn>
           <RightColumn>
                   <h2>Preview</h2>
                   <PreviewArea>
-                      <p>Network preview</p>
                     <Card>
                         <DataUser>
                             <ProfilePicture/>
                             <div className="text">
-                                <Label></Label>
+                                <Label>{userPublication || 'Usuario'}</Label>
                                 <Time>2 h</Time>
                             </div>
                         </DataUser>
                                   <Data>
-                                    <Paragraph></Paragraph>
-                                    <Hashtag href='#'></Hashtag>
+                                    <Title>{title || 'Titulo'}</Title>
+                                    <Paragraph>{text || 'Texto'}</Paragraph>
+                                    <Hashtag href="#">#{course?.label || 'Sin curso'} </Hashtag>
+                                    <Hashtag href='#'>{hashtags || '#Hashtags'}</Hashtag>
                                   </Data>
                                   <Image>
                                     {loading ? (
@@ -109,13 +143,44 @@ export const NewPublication = () => {
     );
 };
 
+const LeftColumn = styled.form`
+    flex: 1;
+    margin-right: 20px;
+    margin-left: 11px;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+`;
+
+
 const Wrapper = styled.div`
 
 `
 
+const Button = styled.button`
+  background-color: black;
+  color: white;
+  border-radius: 20px;
+  cursor: pointer;
+  width: 100px;
+  height: 50px;
+  font-size: 15px;
+  font-style: italic;
+  &:hover {
+    background-color: #2d2d2d;
+    cursor: pointer;
+  }
+  &:disabled {
+    background-color: #cccccc;
+    color: black;
+    cursor: not-allowed;
+    opacity: 0.4;
+  }
+`
+
 const Card = styled.div`
   width: 55rem;
-  height: 45rem;
+  height: 40rem;
   background-color: #fff;
   border-radius: 30px;
 `
@@ -133,7 +198,13 @@ const DataUser = styled.div`
 
 const Data = styled.div`
   margin: 40px 30px 5px 30px;
-  background-color: #00ff40;
+  background-color: transparent;
+`
+
+const Title = styled.h2`
+  font-size: 20px;
+  font-weight: bold;
+  font-style: italic;
 `
 
 const Paragraph = styled.p`
@@ -147,7 +218,7 @@ const Hashtag = styled.a`
 `
 
 const Image = styled.div`
-  background-color: yellow;
+  background-color: transparent;
   width: 100%;
   height: 21em;
   display: flex;
@@ -205,18 +276,10 @@ const HeaderSection = styled.div`
     width: 100%;
 `
 
-const LeftColumn = styled.div`
-    flex: 1;
-    margin-right: 20px;
-    margin-left: 11px;
-    width: 100%;
-    height: 100%;
-    background-color: #fff;
-`;
 
 const RightColumn = styled.div`
     flex: 1;
-    background-color: #f0f0f0;
+    background-color: transparent;
     padding: 20px;
     border-radius: 5px;
 `;
@@ -235,10 +298,6 @@ const AttachImageSection = styled.div`
   margin-top: -20px;
 `;
 
-const ConnectWebsiteSection = styled.div`
-    margin-bottom: 1px;
-`;
-
 const PreviewArea = styled.div`
-    
+    height: 50px;
 `;

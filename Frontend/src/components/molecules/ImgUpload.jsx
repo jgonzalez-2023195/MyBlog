@@ -10,6 +10,7 @@ export const ImgUpload = ({ onImageUpload }) => {
     return (
         <InputFile
             onChange={handleChange}
+            
         />
     )
 }

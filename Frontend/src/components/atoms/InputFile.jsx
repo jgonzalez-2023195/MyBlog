@@ -5,7 +5,7 @@ import { Icon } from '@iconify/react'
 export const InputFile = ({onChange}) => {
     return (
         <StyledWrapper>
-            <form className="file-upload-form">
+            <div className="file-upload-form">
                 <label htmlFor="file" className="file-upload-label">
                 <div className="file-upload-design">
                     <Icon icon="tabler:cloud-up" width="24" height="24" />
@@ -15,7 +15,7 @@ export const InputFile = ({onChange}) => {
                 </div>
                 <input id="file" type="file" name='file' onChange={onChange}/>
                 </label>
-            </form>
+            </div>
         </StyledWrapper>
     )
 }

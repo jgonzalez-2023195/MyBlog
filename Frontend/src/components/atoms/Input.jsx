@@ -2,17 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { Icon } from '@iconify/react'
 
-export const Input = ({
-    field,
-    text,
-    value,
-    change,
-    showErrMsg,
-    validateMsg,
-    blur,
-    icon,
-    iconName
-}) => {
+export const Input = ({ text, icon, iconName, type, error, ...rest }, ref) => {
 
     return (
         <StyledWrapper>
@@ -23,9 +13,13 @@ export const Input = ({
                 <input 
                     className='input'
                     required
-                    value={value}
+                    type={type}
+                    ref={ref}
+                    {...rest}
+                    error={error}
                 />
                 <label className="label">{text}</label>
+                {error && <p className="error-message">{error.message}</p>}
             </div>
         </StyledWrapper>
     )
@@ -91,4 +85,11 @@ const StyledWrapper = styled.div`
     -1px -1px 6px rgba(255, 255, 255, 0.4),
     inset 3px 3px 10px rgba(0,0,0,1),
     inset -1px -1px 6px rgba(255, 255, 255, 0.4);
-}`
+}
+
+.error-message {
+    color: red; // Estilo para el mensaje de error
+    font-size: 12px;
+  }
+
+`

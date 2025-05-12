@@ -1,26 +1,19 @@
 import { useState, useEffect, useCallback } from "react";
-import { getPublications } from "../routers/services/App";
+import { getPublicationsRequest } from "../routers/services/App";
 import toast from "react-hot-toast";
 import { io } from "socket.io-client";
+
+const socket = io('http://localhost:4003')
 
 export const usePublications = ()=> {
     const [publications, setPublications] = useState([])
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState(false)
     
-    useEffect(() => {
-        const socket = io('http://localhost:4003')
-        socket.on('message', (data) => {
-            console.log('Nueva publicación recibida:', data);
-            setPublications((prevPublications) => [data, ...prevPublications]);
-            toast.success('Nueva publicación recibida');
-        });
-
-    }, []);
 
     const publication = useCallback(async ()=> {
         setIsLoading(true)
-        const response = await getPublications()
+        const response = await getPublicationsRequest()
         setIsLoading(false)
 
         if(response.error){
@@ -42,9 +35,20 @@ export const usePublications = ()=> {
         toast.success('Publicaciones cargadas inicialmente')
     }, []) // Array de dependencias vacío
 
-    useEffect(()=> {
-        publication()
-    }, [publication])
+    useEffect(() => {
+        publication();
+
+        // Listen for new publication events
+        socket.on('newPublication', (newPub) => {
+            setPublications((prevPublications) => [newPub, ...prevPublications]);
+            toast.success('Nueva publicación recibida en tiempo real');
+        });
+
+        // Cleanup socket listener on unmount
+        return () => {
+            socket.off('newPublication');
+        };
+    }, [publication]);
 
     return {
         publications,

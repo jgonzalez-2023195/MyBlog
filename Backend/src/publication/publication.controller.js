@@ -5,15 +5,13 @@ export const addPublication = async(req, res)=> {
     try {
         let data = req.body
         let publication = new Publication(data)
-        publication.mediaPicture = req.file?.filename??null
         await publication.save()
 
 
         return res.status(200).send(
             {
                 success: true,
-                message: 'Publication post',
-                publication
+                message: 'Publication post'
             }
         )
     } catch (e) {

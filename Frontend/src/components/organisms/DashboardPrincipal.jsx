@@ -1,13 +1,17 @@
-import React from 'react'
-import styled, { keyframes } from 'styled-components'
+import React, { useState } from 'react'
+import styled from 'styled-components'
 import photo from '../../assets/F1-Logo.png'
 // import post from '../../assets/Prueba.jpg'
-import { Icon } from '@iconify/react'
 import { UserConnect } from '../molecules/UserConnect'
 import { usePublications } from '../../hooks/usePublications'
+import { ActionsButtons } from '../molecules/ActionsButtons'
+import { CommentSection } from '../../pages/CommentSection'
 
 export const DashboardPrincipal = () => {
   const {publications, isLoading, error} = usePublications()
+  const [open, setOpen] = useState(false)
+  const [selectedPublicationId, setSelectedPublicationId] = useState(null)
+  
   const users = [
     {
         userName: 'apple',
@@ -32,7 +36,7 @@ export const DashboardPrincipal = () => {
     {
       userName: 'kinal.org.gt',
       name: 'Fundación Kinal',
-      isFollowing: false,
+      isFollowing: true,
     },
     {
       userName: 'freecodecamp',
@@ -40,6 +44,14 @@ export const DashboardPrincipal = () => {
       isFollowing: false,
     },
 ]
+
+  const handleOpen = (publicationId) => { 
+    setSelectedPublicationId(publicationId)// Guardar el ID de la publicación seleccionada
+    setOpen(!open); // Abrir CommentSection
+  };
+
+  console.log(selectedPublicationId);
+  
 
   if (isLoading) {
     return <p>Cargando eventos...</p>;
@@ -50,62 +62,73 @@ export const DashboardPrincipal = () => {
   }
 
   return (
-    <Contetn>
-      <CardSection>
-        {publications.length > 0 ? (
-          publications.map(publication => (
-          <Card key={publication.id}>
-            <DataUser>
-              <ProfilePicture src={photo}/>
-              <div className="text">
-                <Label>{publication.userPublication}</Label>
-                <Time>2 h</Time>
-              </div>
-            </DataUser>
-            <Data>
-              <Paragraph>{publication.text}</Paragraph>
-              <Hashtag href='#'>{publication.hashtags}</Hashtag>
-            </Data>
-            <Image>
-              <Img src={publication.mediaPicture}/>
-            </Image>
-            <Accions>
-              <BtnContent>
-                
-              </BtnContent>
-            </Accions>
-          </Card>
-          ))
-        ) : (
-          <p>No hay nada</p>
-        )
-      }
-      </CardSection>
-      <ConnectPeopleSection>
-        <LabelS>
-          <Label>Basado en tu contenido</Label>
-        </LabelS>
-        {
-          users.map(user => {
-            const { userName, name, isFollowing } = user
-            return (
-            <UserConnect
-            key={userName}
-            username={userName}
-            initialIsFollowing={isFollowing}
-            >
-              {name}
-            </UserConnect>
-            )
-          })
+    <>
+      <Contetn>
+        
+        <CardSection>
+          {publications.length > 0 ? (
+            publications.map(publication => (
+            <Card key={publication.id}>
+              <DataUser>
+                <ProfilePicture src={photo}/>
+                <div className="text">
+                  <Label>{publication.userPublication}</Label>
+                  <Time>2 h</Time>
+                </div>
+              </DataUser>
+              <Data>
+                <Title>{publication.title}</Title>
+                <Paragraph>{publication.text}</Paragraph>
+                <Hashtag href='#'>#{publication.course?.name} </Hashtag>
+                <Hashtag href='#'>{publication.hashtags}</Hashtag>
+              </Data>
+              <Image>
+                <Img src={publication.mediaPicture}/>
+              </Image>
+              <Accions>
+                <BtnContent>
+                  <ActionsButtons
+                    onClickHandler={() => handleOpen(publication._id)}
+                  />
+                </BtnContent>
+              </Accions>
+            </Card>
+            ))
+          ) : (
+            <p>No hay nada</p>
+          )
         }
-      </ConnectPeopleSection>
-    </Contetn>
+        </CardSection>
+        <ConnectPeopleSection>
+          <LabelS>
+            <Label>Basado en tu contenido</Label>
+          </LabelS>
+          {
+            users.map(user => {
+              const { userName, name, isFollowing } = user
+              return (
+              <UserConnect
+              key={userName}
+              username={userName}
+              initialIsFollowing={isFollowing}
+              >
+                {name}
+              </UserConnect>
+              )
+            })
+          }
+        </ConnectPeopleSection>
+      </Contetn>
+      {open && <CommentSection
+                  handleOpen={handleOpen}
+                  publicationId={selectedPublicationId}// Pasar el publicationId
+                />}
+    </>
   )
 }
 
 const Contetn = styled.div `
-  background-color: #858282;
+  background-color: transparent;
   display: flex;
   gap: 60px;
 `
@@ -147,94 +170,16 @@ const DataUser = styled.div`
   }
 `
 
-//Animaciones LikeBtn
-const movingBorders = keyframes`
-  0% {
-    border-color: #fce4e4;
-  }
-  50% {
-    border-color: #cc0d0d;
-  }
-  90% {
-    border-color: #ff0404;
-  }
-`;
-
-const beatingHeart = keyframes`
-  0% {
-    transform: scale(1);
-  }
-  15% {
-    transform: scale(1.15);
-  }
-  30% {
-    transform: scale(1);
-  }
-  45% {
-    transform: scale(1.15);
-  }
-  60% {
-    transform: scale(1);
-  }
-`;
-
-const LikeBtn = styled.button`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px 25px 20px 22px;
-  box-shadow: rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
-  background-color: #e8e8e8;
-  border-color: #ffe2e2;
-  border-style: solid;
-  border-width: 9px;
-  border-radius: 35px;
-  font-size: 25px;
-  cursor: pointer;
-  font-weight: 900;
-  color: rgb(134, 124, 124);
-  font-family: monospace;
-  transition:
-    transform 400ms cubic-bezier(0.68, -0.55, 0.27, 2.5),
-    border-color 400ms ease-in-out,
-    background-color 400ms ease-in-out;
-  word-spacing: -2px;
-  position: relative; /* Necesario para posicionar los iconos .filled */
-
-  &:hover {
-    background-color: #eee;
-    transform: scale(1.05);
-    animation: ${movingBorders} 3s infinite;
-
-    .empty {
-      opacity: 0;
-    }
-
-    .filled {
-      opacity: 1;
-      animation: ${beatingHeart} 1.2s infinite;
-    }
-  }
-
-  svg { /* Estilos para ambos iconos (empty y filled) */
-    margin-right: 11px;
-    color: rgb(255, 110, 110);
-    transition: opacity 100ms ease-in-out;
-
-    &.filled {
-      position: absolute;
-      opacity: 0;
-      top: 20px;
-      left: 22px;
-      margin-right: 0; /* Evita el margen adicional para el icono posicionado absolutamente */
-    }
-  }
-`
-
 const Data = styled.div`
   margin: 40px 30px 5px 30px;
-  background-color: #00ff40;
 `
+
+const Title = styled.h2`
+  font-size: 20px;
+  font-weight: bold;
+  font-style: italic;
+`
+
 
 const Paragraph = styled.p`
   font-size: 18px;
@@ -247,7 +192,6 @@ const Hashtag = styled.a`
 `
 
 const Image = styled.div`
-  background-color: yellow;
   width: 100%;
   height: 21em;
   display: flex;
@@ -287,10 +231,11 @@ const Time = styled.span`
 `
 
 const Accions = styled.div`
-  background-color: peru;
   margin: 35px 0;
 `
 
 const BtnContent = styled.div`
   margin: 30px 30px;
+  display: flex;
+  justify-content: center;
 `
