@@ -20,9 +20,10 @@ export const getCourseRequest = async()=> {
 }
 
 //Publication
-export const getPublicationsRequest = async()=> {
+export const getPublicationsRequest = async(filters = {})=> {
     try {
-        return await apiClient.get('/publication/list')
+        const params = new URLSearchParams(filters).toString()
+        return await apiClient.get(`/publication/list?${params}`)
     } catch (e) {
         return {
             error: true,

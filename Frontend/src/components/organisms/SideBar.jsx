@@ -1,10 +1,9 @@
 import { NavLink } from 'react-router'
-import React from 'react'
 import { Icon } from '@iconify/react'
 import styled from 'styled-components'
 import { useThemeStore } from "../../store/ThemeStore"
-import logo from '../../assets/F1-Logo.png'
 import Grid from "@mui/material/Grid"
+import { Tooltip } from '@mui/material'
 
 
 export const SideBar = () => {
@@ -14,16 +13,27 @@ export const SideBar = () => {
             <Grid size={{ xs: 1, sm: 2, md: 4, lg: 12, xl: 12}}>
                 <section className="sidebarSection1">
                     <Logo>
-                        <Img src={logo}/>
+                        <Img src={`https://res.cloudinary.com/dzydnoljd/image/upload/v1747205911/Kinal_Blog_vwsczs.png`}/>
                     </Logo>
                     <div className="options">
-                        <NavLink to={'/'}>
-                            <Icon icon="majesticons:home" className='Icon' />
-                        </NavLink>
-                        <NavLink to={'/new'}>
-                            <Icon icon="arcticons:daily-dev" className='Icon' />
-                        </NavLink>
-                        <Icon icon="icon-park-outline:search" className='Icon' />
+                            <Tooltip title="Inicio" arrow placement="right">
+                                <NavLink to={'/'}>
+                                    <Icon icon="majesticons:home" className='Icon' />
+                                </NavLink>
+                            </Tooltip>
+
+                            <Tooltip title="Nueva Publicación" arrow placement="right">
+                                <NavLink to={'/new'}>
+                                    <Icon icon="arcticons:daily-dev" className='Icon' />
+                                </NavLink>
+                            </Tooltip>
+
+                            <Tooltip title="Filtros" arrow placement="right">
+                                <NavLink to={'/filters'}>
+                                    <Icon icon="icon-park-outline:search" className='Icon' />
+                                </NavLink>
+                            </Tooltip>
+
                     </div>
                 </section>
             </Grid>
@@ -50,7 +60,7 @@ export const SideBar = () => {
     )
 }
 
-const Container = styled(Grid)`
+const Container = styled(Grid)` 
     padding-top: 25px;
     .sidebarSection1{
         display: flex;
@@ -114,6 +124,6 @@ const Img = styled.img`
 const Divider = styled.div`
     height: 1px;
     width: 30%;
-    background: ${({ theme }) => theme.divider};
+    background: ${({ theme }) => theme.text};
     margin: 0 auto;
 `;

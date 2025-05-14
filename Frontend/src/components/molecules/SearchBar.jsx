@@ -8,6 +8,7 @@ export const SearchBar = () => {
         <Input
             holder={'Buscar'}
             icon
+            type={'text'}
             iconName={'icon-park-outline:search'}
         />
     </SearchContainer>

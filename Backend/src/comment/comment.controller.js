@@ -28,6 +28,7 @@ export const commentToPublication = async(req, res)=> {
 
 export const listComment = async(req, res)=> {
     const id = req.params.id
+    const { user } = req.query
     try {
         if(!Types.ObjectId.isValid(id)) return res.status(400).send(
             {
@@ -36,7 +37,12 @@ export const listComment = async(req, res)=> {
             }
         )
 
-        let comment = await Comment.find({publication: id})
+        const filter = { publication: id };
+            if (user) {
+            filter.user = user;
+        }
+        
+        let comment = await Comment.find({publication: id}).sort({createdAt: -1})
 
         
         return res.status(200).send(

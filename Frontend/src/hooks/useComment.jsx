@@ -35,7 +35,7 @@ export const useComment = () => {
             )
         }
         setError(false)
-        socket.emit('message', { ...comment })
+        socket.emit('newComment', { ...comment })
         return toast.success('Comentario publicado')
     }
     return {

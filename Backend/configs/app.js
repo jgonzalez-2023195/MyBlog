@@ -42,11 +42,11 @@ export const initServer = ()=> {
         socket.emit('message', `Servidor dice (${socket.id}): ${JSON.stringify(message)}`);
         });
 
-        socket.on('message', (message) => {
+        socket.on('newComment', (message) => {
           console.log(`Mensaje Socket.IO recibido de ${socket.id}:`, message);
         // Broadcast the new publication to all connected clients
         io.emit('newComment', message)
-        socket.emit('message', `Servidor dice (${socket.id}): ${JSON.stringify(message)}`);
+        socket.emit('newComment', `Servidor dice (${socket.id}): ${JSON.stringify(message)}`);
         });
 
   

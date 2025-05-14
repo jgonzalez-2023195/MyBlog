@@ -34,7 +34,7 @@ const StyledWrapper = styled.div`
     flex-direction: column;
     gap: 7px;
     position: relative;
-    color: black;
+    color: ${({theme})=>theme.text};
   }
 
   .container .label {
@@ -56,7 +56,7 @@ const StyledWrapper = styled.div`
     padding: 0px 17px;
     margin-top: 5px;
     border-radius: 6px;
-    color: black;
+    color: ${({theme})=>theme.text};
     font-size: 20px;
     background-color: transparent;
     box-shadow: 3px 3px 10px rgba(0,0,0,1),
@@ -65,7 +65,7 @@ const StyledWrapper = styled.div`
 
   .input:focus {
     border: 2px solid transparent;
-    color: black;
+    color: ${({theme})=>theme.text};
     box-shadow: 3px 3px 10px rgba(0,0,0,1),
     -1px -1px 6px rgba(255, 255, 255, 0.4),
     inset 3px 3px 10px rgba(0,0,0,1),

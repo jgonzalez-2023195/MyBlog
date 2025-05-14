@@ -29,7 +29,7 @@ const Wrapper = styled(Grid)`
 `
 
 const MainWrapper = styled(Grid)`
-    background-color: ${({theme})=>theme.bgd};
+    background: ${({theme})=>theme.bgd};
     align-items: center;
     height: 100vh;
 `

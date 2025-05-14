@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { UserInfo } from '../molecules/UserInfo';
 import { CommentActions } from '../molecules/CommentAction';
 import { CommentInput } from './CommentInput';
+import { Avatar } from '../../utils/Avatar';
 
 const CommentContainer = styled.div`
   padding: 16px 0;
@@ -43,33 +44,99 @@ const Text = styled.p`
   margin: 0;
 `;
 
-export const CommentItem = ({ comment, onReply, onLike, onDislike }) => {
+export const CommentItem = ({ comment, onReply}) => {
   const [replyVisible, setReplyVisible] = useState(false);
+  const [likes, setLikes] = useState(comment.likes);
+  const [dislikes, setDislikes] = useState(comment.dislikes);
+  
+  const handleLike = () => {
+    if (likes.userAction) {
+      setLikes({
+        count: likes.count - 1,
+        userAction: false
+      });
+    } else {
+      setLikes({
+        count: likes.count + 1,
+        userAction: true
+      });
+      
+      if (dislikes.userAction) {
+        setDislikes({
+          count: dislikes.count - 1,
+          userAction: false
+        });
+      }
+    }
+  };
+  
+  const handleDislike = () => {
+    if (dislikes.userAction) {
+      setDislikes({
+        count: dislikes.count - 1,
+        userAction: false
+      });
+    } else {
+      setDislikes({
+        count: dislikes.count + 1,
+        userAction: true
+      });
+      
+      if (likes.userAction) {
+        setLikes({
+          count: likes.count - 1,
+          userAction: false
+        });
+      }
+    }
+  };
 
   const toggleReply = () => {
     setReplyVisible(!replyVisible);
   };
 
   const handleReplySubmit = (content) => {
-    onReply(comment.id, content); // Llama a onReply con el ID del comentario y el contenido
+    onReply(comment._id, content); 
+    console.log('a', comment._id, content);
+    // Llama a onReply con el ID del comentario y el contenido
     setReplyVisible(false);
   };
-  console.log(comment.user);
-  
+  function tiempoDesdeCreacion(createdAt) {
+    const ahora = new Date();
+    const diferencia = ahora - new Date(createdAt); // Diferencia en milisegundos
+    const segundos = Math.floor(diferencia / 1000);
+    const minutos = Math.floor(segundos / 60);
+    const horas = Math.floor(minutos / 60);
+    if (segundos < 60) {
+        return "justo ahora";
+    } else if (minutos < 60) {
+        return `${minutos} m`;
+    } else if (horas < 24) {
+        return `${horas} h`;
+    } else {
+        return `${Math.floor(horas / 24)} d`; // Opcional: días
+    }
+  }
   return (
     <CommentContainer>
-      <UserInfo user={comment.user} timestamp={comment.timeAgo} />
+      <DataU>
+        {Avatar(comment.user)}
+        <div className="DataTextU">
+          <UserInfo user={comment.user} timestamp={comment.timeAgo} />
+          <Time>{tiempoDesdeCreacion(comment.createdAt)}</Time>
+        </div>
+      </DataU>
       <CommentContent>
         <Text>{comment.textComment}</Text>
       </CommentContent>
       <CommentActions
-  likes={comment.likes}
-  dislikes={comment.dislikes}
-  onLike={() => onLike(comment.id)}
-  onDislike={() => onDislike(comment.id)}
-  onReply={toggleReply}
-  onMore={() => {}}
-/>
+        likes={comment.likes}
+        dislikes={comment.dislikes}
+        onLike={handleLike}
+        onDislike={handleDislike}
+        onReply={toggleReply}
+        onMore={() => {}}
+      />
       {replyVisible && (
         <ReplyInputContainer>
           <CommentInput
@@ -83,11 +150,9 @@ export const CommentItem = ({ comment, onReply, onLike, onDislike }) => {
         <RepliesContainer>
           {comment.replies.map((reply) => (
             <CommentItem
-              key={reply.id}
+              key={reply._id}
               comment={reply}
               onReply={onReply}
-              onLike={onLike}
-              onDislike={onDislike}
             />
           ))}
         </RepliesContainer>
@@ -95,3 +160,17 @@ export const CommentItem = ({ comment, onReply, onLike, onDislike }) => {
     </CommentContainer>
   );
 };
+
+const Time = styled.span`
+  font-size: 12px;
+  color: gray;
+`
+
+const DataU = styled.div`
+  display: flex;
+  gap: 12px;
+  .DataTextU {
+    display: flex;
+    flex-direction: column;
+  }
+`

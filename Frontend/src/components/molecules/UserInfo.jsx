@@ -7,14 +7,6 @@ const UserInfoContainer = styled.div`
   margin-bottom: 8px;
 `;
 
-const Avatar = styled.img`
-  width: ${props => (props.size === 'sm' ? '24px' : props.size === 'lg' ? '48px' : '32px')};
-  height: ${props => (props.size === 'sm' ? '24px' : props.size === 'lg' ? '48px' : '32px')};
-  border-radius: 50%;
-  background-color: #e0e0e0; /* Fondo por si no hay imagen */
-  ${props => !props.src && 'content: url("https://via.placeholder.com/40")'}; /* Imagen por defecto */
-`;
-
 const UserDetails = styled.div`
   display: flex;
   flex-direction: column;

@@ -48,7 +48,6 @@ export const useComments = (publicationId) => {
             likes: { count: 0, userAction: false },
             dislikes: { count: 0, userAction: false },
         }, ...prevComments]);
-        toast.success('Nuevo comentario recibido en tiempo real');
         });
 
         return () => {

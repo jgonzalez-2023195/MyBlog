@@ -14,8 +14,8 @@ export const ActionsButtons = ({onClickHandler}) => {
                     </svg>
                     <span className="like-text">Likes</span>
                     </label>
-                    <span className="like-count one">68</span>
-                    <span className="like-count two">69</span>
+                    <span className="like-count one">0</span>
+                    <span className="like-count two">1</span>
                 </div>
             </LikeButton>
             <CommentButton>
@@ -108,7 +108,7 @@ const LikeButton = styled.div`
     width: 136px;
     border-radius: 16px;
     border: none;
-    background-color: #1d1d1d;
+    background-color: transparent;
     overflow: hidden;
     box-shadow:
       inset -2px -2px 5px rgba(255, 255, 255, 0.2),
@@ -133,7 +133,7 @@ const LikeButton = styled.div`
   }
 
   .like-text {
-    color: #fcfcfc;
+    color: #000;
     font-size: 16px;
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   }
@@ -164,11 +164,12 @@ const LikeButton = styled.div`
 
   .on:checked ~ .like-count.two {
     transform: translateX(0);
-    color: #fcfcfc;
+    color: #000;
   }
 
   .on:checked ~ .like-count.one {
     transform: translateY(-40px);
+    
   }
 
   @keyframes enlarge {

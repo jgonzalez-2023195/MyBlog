@@ -24,6 +24,10 @@ export const usePublications = ()=> {
                     return toast.error(error.msg)
                 }
             }
+
+            if(response?.data?.publications || [] < 1){
+                toast.error('No hay publicaciones creadas')
+            }
             return toast.error(
                 response?.e?.response?.data?.msg ||
                 response?.e?.data?.msg ||
@@ -31,8 +35,7 @@ export const usePublications = ()=> {
             )
         }
         setError(false)
-        setPublications(response?.data?.publications || []);
-        toast.success('Publicaciones cargadas inicialmente')
+        setPublications(response?.data?.publications || [])
     }, []) // Array de dependencias vacío
 
     useEffect(() => {
@@ -50,10 +53,36 @@ export const usePublications = ()=> {
         };
     }, [publication]);
 
+    
+
+    const fetchPublications = useCallback(async (filters) => {
+        setIsLoading(true);
+        const response = await getPublicationsRequest(filters);
+        setIsLoading(false);
+
+        if (response.error) {
+            setError(true);
+            if (response?.e?.response?.data?.errors) {
+                let arrayErrors = response?.e?.response?.data?.errors;
+                for (const error of arrayErrors) {
+                    return toast.error(error.msg);
+                }
+            }
+            return toast.error(
+                response?.e?.response?.data?.msg ||
+                response?.e?.data?.msg ||
+                'Error al intentar obtener los datos'
+            );
+        }
+        setError(false);
+        setPublications(response?.data?.publications || []);
+    }, []);
+
     return {
         publications,
         isLoading,
         error,
-        setError
+        setError,
+        fetchPublications
     }
 }

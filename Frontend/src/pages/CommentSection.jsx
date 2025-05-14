@@ -42,41 +42,52 @@ export const CommentSection = ({handleOpen, publicationId}) => {
         dislikes: { count: 0, userAction: false },
         user: {
           id: commentData.user,
-          name: data.user || 'AAA User',
-          avatar: 'https://randomuser.me/api/portraits/men/43.jpg', // Simula datos de usuario
+          name: data.user || 'AAA User', // Simula datos de usuario
         },
-        content: commentData.text, // Asegúrate de usar la propiedad correcta para el contenido
-        timestamp: new Date(),
-        timeAgo: 'Just now',
+        content: commentData.text,
         replies: [], // Inicializa las respuestas si no vienen del backend
       };
       setComments([newComment, ...comments]);
     }
   }
 
-  const handleReply = (commentId) => {
+  const handleReply = async (commentId, data) => {
     const newReply = {
-      
+        text: data.text,
+        user: data.user || 'current-user', // Puedes obtener el usuario actual de otra manera si es necesario
+        publication: publicationId,
+        parentComment: commentId
     };
+    console.log('enviando respuesta', newReply);
+    
+    const response = await addcomments(newReply)
 
-    const updateReplies = (commentsList) => {
-      return commentsList.map(comment => {
-        if (comment.id === commentId) {
-          return {
-            ...comment,
-            replies: [...(comment.replies || []), newReply]
-          };
-        } else if (comment.replies?.length) {
-          return {
-            ...comment,
-            replies: updateReplies(comment.replies)
-          };
-        }
-        return comment;
-      });
-    };
+    if (response.success && response.comment) {
+      const newReply = {
+        ...response.comment,
+        user: { id: newReply.user, name: newReply.user },
+        textComment: response.comment.textComment,
+        replies: []
+      };
 
-    setComments(updateReplies(comments));
+      const updateCommentsWithReply = (commentsList) => {
+        return commentsList.map(comments => {
+          if (comments._id === commentId) {
+            return {
+              ...comments,
+              replies: [...(comments.replies || []), newReply],
+            };
+          } else if (comments.replies?.length) {
+            return {
+              ...comments,
+              replies: updateCommentsWithReply(comments.replies),
+            };
+          }
+          return comments;
+        });
+      };
+      setComments(updateCommentsWithReply(comments));
+    }
   };
 
   return (

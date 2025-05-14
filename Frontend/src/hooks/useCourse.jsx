@@ -31,7 +31,6 @@ export const useCourse = () => {
         }
         setError(false)
         setCourses(response?.data?.course || []);
-        toast.success('Cursos cargados inicialmente')
     }, [])
 
     useEffect(() => {

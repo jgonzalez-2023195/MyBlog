@@ -1,14 +1,16 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import photo from '../../assets/F1-Logo.png'
 // import post from '../../assets/Prueba.jpg'
 import { UserConnect } from '../molecules/UserConnect'
 import { usePublications } from '../../hooks/usePublications'
 import { ActionsButtons } from '../molecules/ActionsButtons'
 import { CommentSection } from '../../pages/CommentSection'
+import { Avatar } from '../../utils/Avatar'
+import { ScaleLoader } from 'react-spinners'
 
-export const DashboardPrincipal = () => {
-  const {publications, isLoading, error} = usePublications()
+export const DashboardPrincipal = ({ publications: externalPublications }) => {
+  const {publications: defaultPublication, isLoading, error} = usePublications()
+  const publications = externalPublications || defaultPublication;
   const [open, setOpen] = useState(false)
   const [selectedPublicationId, setSelectedPublicationId] = useState(null)
   
@@ -48,38 +50,55 @@ export const DashboardPrincipal = () => {
   const handleOpen = (publicationId) => { 
     setSelectedPublicationId(publicationId)// Guardar el ID de la publicación seleccionada
     setOpen(!open); // Abrir CommentSection
-  };
-
-  console.log(selectedPublicationId);
+  }
   
 
   if (isLoading) {
-    return <p>Cargando eventos...</p>;
+    return <p><ScaleLoader color='white'/></p>;
   }
 
   if (error) {
-    return <p>Error al cargar los eventos: {error}</p>;
+    return <Msg>Error al cargar los eventos</Msg>;
+  }
+
+  function tiempoDesdeCreacion(createdAt) {
+    const ahora = new Date();
+    const diferencia = ahora - new Date(createdAt); // Diferencia en milisegundos
+    const segundos = Math.floor(diferencia / 1000);
+    const minutos = Math.floor(segundos / 60);
+    const horas = Math.floor(minutos / 60);
+    if (segundos < 60) {
+        return "justo ahora";
+    } else if (minutos < 60) {
+        return `hace ${minutos} m`;
+    } else if (horas < 24) {
+        return `hace ${horas} h`;
+    } else {
+        return `hace ${Math.floor(horas / 24)} d`; // Opcional: días
+    }
   }
 
   return (
     <>
+      <TitleComponent>{externalPublications ? 'Publicaciones filtradas' : 'Todas las Publicaciones'}</TitleComponent>
       <Contetn>
-        
         <CardSection>
           {publications.length > 0 ? (
             publications.map(publication => (
             <Card key={publication.id}>
               <DataUser>
-                <ProfilePicture src={photo}/>
+                <ProfilePicture>
+                  {Avatar(publication.userPublication)}
+                </ProfilePicture>
                 <div className="text">
                   <Label>{publication.userPublication}</Label>
-                  <Time>2 h</Time>
+                  <Time>{tiempoDesdeCreacion(publication.createdAt)}</Time>
                 </div>
               </DataUser>
               <Data>
                 <Title>{publication.title}</Title>
                 <Paragraph>{publication.text}</Paragraph>
-                <Hashtag href='#'>#{publication.course?.name} </Hashtag>
+                <Hashtag href='#'>#{publication.course?.name || 'Curso_no_asignado'} </Hashtag>
                 <Hashtag href='#'>{publication.hashtags}</Hashtag>
               </Data>
               <Image>
@@ -127,10 +146,20 @@ export const DashboardPrincipal = () => {
   )
 }
 
+const Msg = styled.p`
+  color: ${({theme})=>theme.text};
+  font-size: 30px;
+  font-style: italic;
+`
+
 const Contetn = styled.div `
   background-color: transparent;
   display: flex;
   gap: 60px;
+`
+
+const TitleComponent = styled.h1`
+  color: ${({theme})=>theme.text};
 `
 
 const CardSection = styled.section`
@@ -150,6 +179,7 @@ const ConnectPeopleSection = styled.section`
 
 const LabelS = styled.div`
   margin-bottom: 30px;
+  color: ${({theme})=>theme.text}
 `
 
 const Card = styled.div`
@@ -211,10 +241,10 @@ const Img = styled.img`
   );
 `
 
-const ProfilePicture = styled.img`
+const ProfilePicture = styled.div`
   width: 60px;
   height: 60px;
-  background-color: black;
+  background-color: transparent;
   border-radius: 20%;
   object-fit: contain;
 `
@@ -223,6 +253,7 @@ const Label = styled.label`
   margin-top: 1px;
   font-size: 19px;
   font-weight: bold;
+  
 `
 
 const Time = styled.span`

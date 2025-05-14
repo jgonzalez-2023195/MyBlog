@@ -1,5 +1,6 @@
 import Publication from './publication.model.js'
 import Comment from '../comment/comment.model.js'
+import Course from '../courses/course.model.js'
 
 export const addPublication = async(req, res)=> {
     try {
@@ -28,13 +29,40 @@ export const addPublication = async(req, res)=> {
 
 
 export const listPublications = async(req, res)=> {
+    const { course, startDate, endDate, hashtags, title } = req.query;
+    const filter = {};
+
     try {
-        let publications = await Publication.find().populate(
+        
+        if (course) {
+            const courseDoc = await Course.findOne({ name: course });
+            if (!courseDoc) {
+                return res.status(404).send({
+                success: false,
+                message: 'Course not found'
+                });
+            }
+            filter.course = courseDoc._id;
+        }
+
+        if (startDate && endDate) {
+            filter.createdAt = { $gte: new Date(startDate), $lte: new Date(endDate) };
+        }
+
+        if (hashtags) {
+            filter.hashtags = { $in: hashtags.split(',') };
+        }
+
+        if (title) {
+            filter.title = { $regex: title, $options: 'i' };
+        }
+
+        let publications = await Publication.find(filter).populate(
             {
                 path: 'course',
                 select: 'name -_id'
             }
-        )
+        ).sort({createdAt: -1})
 
         if(publications.length===0) return res.status(404).send(
             {

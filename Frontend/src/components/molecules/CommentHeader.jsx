@@ -10,6 +10,7 @@ const HeaderContainer = styled.div`
 const LeftSection = styled.div`
   display: flex;
   align-items: center;
+  gap: 8px;
 `;
 
 const CommentCount = styled.span`
@@ -60,7 +61,7 @@ export const CommentHeader = ({ commentCount, currentSort, onSortChange }) => {
   return (
     <HeaderContainer>
       <LeftSection>
-        <Text variant="h3" weight="bold">Comments</Text>
+        <Text variant="h3" weight="bold">Comments </Text>
         <CommentCount>{commentCount}</CommentCount>
       </LeftSection>
       

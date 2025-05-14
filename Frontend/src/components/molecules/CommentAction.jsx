@@ -32,22 +32,22 @@ export const CommentActions = ({
 }) => {
   return (
     <ActionsContainer>
-      <ActionButton onClick={onLike} active={likes.userAction}>
+      <ActionButton onClick={onLike}>
         <Icon 
-          icon={likes.userAction ? "weui:like-filled" : "weui:like-filled"} 
+          icon={likes ? "weui:like-filled" : "weui:like-filled"} 
           size={18} 
-          style={{color: likes.userAction ? 'red' : '#000'}}
+          style={{color: likes ? 'red' : '#000'}}
         />
-        <ActionCount>{likes.count}</ActionCount>
+        <ActionCount>1</ActionCount>
       </ActionButton>
       
-      <ActionButton onClick={onDislike} active={dislikes.userAction}>
+      <ActionButton onClick={onDislike} active={dislikes}>
         <Icon 
-          icon={dislikes.userAction ? "weui:like-outlined" : "weui:like-outlined"} 
+          icon={dislikes ? "weui:like-outlined" : "weui:like-outlined"} 
           size={18} 
-          style={{color: dislikes.userAction ? 'red' : '#000'}}
+          style={{color: dislikes ? 'red' : '#000'}}
         />
-        <ActionCount>{dislikes.count}</ActionCount>
+        <ActionCount>0</ActionCount>
       </ActionButton>
       
       <Separator />

@@ -16,7 +16,7 @@ export const NewPublication = () => {
     const { publications } = usePublication();
 
 
-    const { register, handleSubmit, watch, control, formState: { errors, isValid } } = useForm();
+    const { register, handleSubmit, watch, control, formState: { errors, isValid }, reset } = useForm();
 
 
     const uploadImage = async (e) => {
@@ -53,8 +53,8 @@ export const NewPublication = () => {
         // Llamar a la función publications
         const mediPicture = image;
         const courseId = data.course?.value
-        
         await publications(data, mediPicture, courseId);
+        reset();
     }
 
     const buttonDisabled = !isValid || loading

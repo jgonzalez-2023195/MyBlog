@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider, Route, Routes } from "react-router
 import { Layout } from "../hooks/Layout"
 import { DashboardPrincipal } from "../components/organisms/DashboardPrincipal"
 import { NewPublication } from "../components/organisms/NewPublication"
+import { DashboardFilters } from "../components/organisms/DashboardFilters"
 
 const router = createBrowserRouter(
     [
@@ -19,11 +20,20 @@ const router = createBrowserRouter(
                     path: '/new',
                     Component: NewPublication,
                     errorElement: <div>otra vez salio mal</div>
+                },
+                {
+                    path: '/filters',
+                    Component: DashboardFilters,
+                    errorElement: <div>otra vez salio mal de mal</div>
                 }
             ],
             loader: async ()=> {
                 return { message: 'Cargando datos' }
             }
+        },
+        {
+            path: '*',
+            errorElement: <div>404 NOT FOUND</div>
         }
     ]
 )
